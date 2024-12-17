@@ -2,20 +2,21 @@ import mongoose from "mongoose";
 
 const invoiceSchema = new mongoose.Schema({
     name: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User"
+        type: String,
+        required: true
     },
     phone: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User"
+        type: String,
+        required: true
     },
     address: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User"
+        type: String,
+        required: true
     },
     billNumber: {
         type: String,
-        default: null
+        required: true,
+        unique: true
     },
     date: {
         type: Date,
@@ -25,39 +26,42 @@ const invoiceSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: "User"
     },
-    SN: {
-        type: Number,
-        default: 1
-    },
-    productName: {
-        type: mongoose.Schema.ObjectId,
-        ref: "Product"
-    },
-    quantity: {
-        type: Number,
-        default: 1
-    },
-    costPrice: {
-        type: mongoose.Schema.ObjectId,
-        ref: "Product"
-    },
-    amount: {
-        type: Number,
-        default: 0
-    },
+    products: [
+        {
+            SN: {
+                type: Number,
+                required: true
+            },
+            productId: {
+                type: mongoose.Schema.ObjectId,
+                ref: "Product",
+                required: true
+            },
+            productName: {
+                type: String,
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true
+            },
+            sellingPrice: {
+                type: Number,
+                required: true
+            },
+            amount: {
+                type: Number,
+                required: true
+            }
+        }
+    ],
     grandTotal: {
         type: Number,
         default: 0
-    },
-    discountName: {
-        type: mongoose.Schema.ObjectId,
-        default: 0
     }
-},
-    {
-        timestamps: true
-    }
-)
+}, {
+    timestamps: true
+});
 
 const invoiceModel = mongoose.model("Invoice", invoiceSchema);
 export default invoiceModel;

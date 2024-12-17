@@ -3,23 +3,21 @@ import userModel from "../Models/user.model.js";
 
 const userAddController = async (req, res) => {
     try {
-        const { name, phone, address, role } = req.body;
+        const { name, phone, address, role, email } = req.body;
 
         if (!name || !phone || !address || !role) {
             return Handler(
                 400,
-                "Provide name,phone,address and role are needed",
+                "Provide name, phone, address and role are needed",
                 true,
                 false,
                 res
             )
         }
 
-        const existingUser = await userModel.findOne({
-            $or: [{ email }, { phone }]
-        });  
+        const existingUser = await userModel.findOne({ phone: phone });
 
-        if(existingUser){
+        if (existingUser) {
             return Handler(
                 400,
                 "Already Register [Email or Phone]",
@@ -34,7 +32,8 @@ const userAddController = async (req, res) => {
                 name,
                 phone,
                 address,
-                role
+                role,
+                email
             }
         )
 
@@ -67,16 +66,16 @@ const userUpdateController = async (req, res) => {
 
         const { name, phone, email, address, role } = req.body;
 
-        const updateUser =await userModel.findByIdAndUpdate(
+        const updateUser = await userModel.findByIdAndUpdate(
             id,
             {
                 ...(name && { name }),
                 ...(email && { email }),
                 ...(phone && { phone }),
-                ...(address && {address }),
+                ...(address && { address }),
                 ...(role && { role })
             },
-            {new:true}
+            { new: true }
         );
 
         if (!updateUser) {
@@ -111,4 +110,32 @@ const userUpdateController = async (req, res) => {
     }
 }
 
-export { userAddController, userUpdateController };
+const getAllUserController = async(req,res) => {
+    try {
+    
+        const allUser = await userModel.find({});
+    
+        return Handler(
+            200,
+            "All User Fetched : ",
+            false,
+            true,
+            res,
+            {
+                allUser
+            }
+        )
+        
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        )
+    }
+    
+    }
+
+export { userAddController, userUpdateController ,getAllUserController};

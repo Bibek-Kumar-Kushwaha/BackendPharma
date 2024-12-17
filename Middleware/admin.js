@@ -2,7 +2,7 @@ import Handler from "../Utils/handler.js";
 
 const isAdmin = (req, res, next) => {
     try {
-        const admin = req.Admin;
+        const admin = req.adminId;
     
         // Check if the admin exists and has the "ADMIN" role
         if (!admin || admin.role !== "ADMIN") {

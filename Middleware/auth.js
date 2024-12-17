@@ -32,7 +32,7 @@ const auth = async (req, res, next) => {
         }
 
         // Attach the admin object to the request
-        req.Admin = admin;
+        req.adminId = admin;
 
         next();
     } catch (error) {

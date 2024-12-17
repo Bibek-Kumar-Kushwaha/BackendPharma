@@ -170,7 +170,7 @@ const adminLogoutController = async (req, res) => {
     try {
 
         const adminId = req.adminId;
-        console.log(adminId)
+
         if (!adminId) {
             return Handler(
                 400,
@@ -334,7 +334,7 @@ const refreshTokenController = async (req, res) => {
 
 const adminProfileController = async (req, res) => {
     try {
-        const admin = req.Admin;
+        const admin = req.adminId;
 
         if (!admin) {
             return Handler(
@@ -374,4 +374,32 @@ const adminProfileController = async (req, res) => {
     }
 };
 
-export { adminRegisterController, adminLoginController, adminLogoutController, adminUpdateController, refreshTokenController , adminProfileController};
+const getAllAdminController = async(req,res) => {
+    try {
+    
+        const allAdmin = await adminModel.find({});
+    
+        return Handler(
+            200,
+            "All Admin Fetched : ",
+            false,
+            true,
+            res,
+            {
+                allAdmin
+            }
+        )
+        
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        )
+    }
+    
+    }
+
+export { adminRegisterController, adminLoginController, adminLogoutController, adminUpdateController, refreshTokenController, adminProfileController, getAllAdminController };

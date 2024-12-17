@@ -8,8 +8,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        unique: true,
-        default: null
+        default: ""
     },
     phone: {
         type: String,
@@ -22,7 +21,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["CUSTOMER", "SUPPLIER", "PHARMACIST","MANAGER","CASHIER"],
+        enum: ["CUSTOMER", "SUPPLIER", "PHARMACIST", "MANAGER", "CASHIER"],
         default: "CUSTOMER"
     },
     avatar: {

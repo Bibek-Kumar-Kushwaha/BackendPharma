@@ -3,17 +3,17 @@ import mongoose from "mongoose";
 const employeeSchema = new mongoose.Schema({
     name: {
         type: mongoose.Schema.ObjectId,
-        required: [true,"Provide Name"]
+        required: [true, "Provide Name"]
     },
     role: {
         type: mongoose.Schema.ObjectId,
-        required: [true,"Choose Role"]
+        required: [true, "Choose Role"]
     },
     salary: {
         type: Number,
         default: 0
     },
-    phone : {
+    phone: {
         type: String,
         default: null
     },
@@ -22,9 +22,9 @@ const employeeSchema = new mongoose.Schema({
         default: Date.now()
     }
 },
-{
-    timestamps: true
-}
+    {
+        timestamps: true
+    }
 );
 
 const employeeModel = mongoose.model("Employee", employeeSchema);
