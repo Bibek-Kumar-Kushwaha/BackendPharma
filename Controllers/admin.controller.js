@@ -37,7 +37,7 @@ const adminRegisterController = async (req, res) => {
         const saltRound = 10;
         const hashedPassword = await bcrypt.hash(password, saltRound);
 
-        //check is not admin
+        //check is want to register without any premission of admin
         if (role === "ADMIN") {
             return Handler(
                 400,

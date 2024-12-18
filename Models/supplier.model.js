@@ -1,31 +1,27 @@
-import mongoose from 'mongoose';
-
+import mongoose from "mongoose";
 const supplierSchema = new mongoose.Schema({
     supplierName: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
-        required: true
+        type: String, 
+        required: true,
     },
     supplierAddress: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
+        type: String, 
     },
     supplierPhone: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'User',
+        type: String, 
     },
     creditAmount: {
         type: Number,
-        default: 0
+        default: 0,
     },
     depositeAmount: {
         type: Number,
-        default: 0
+        default: 0,
     },
     purchaseAmount: {
         type: Number,
-        default: 0
-    }
+        default: 0,
+    },
 });
 
 const supplierModel = mongoose.model("Supplier", supplierSchema);

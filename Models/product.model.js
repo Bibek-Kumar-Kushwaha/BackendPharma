@@ -6,13 +6,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: [true, "Provide Product Name"]
     },
-    categoryId: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Category'
+    categoryName: {
+        type: String
     },
-    supplierId: {
-        type: mongoose.Schema.ObjectId,
-        ref: 'Supplier'
+    supplierName: {
+        type: String
     },
     costPrice: {
         type: Number,

@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 
 const creditSchema = new mongoose.Schema({
     name: {
-        type: String, // Store name as a string
+        type: String, 
         required: true,
     },
     phone: {
-        type: String, // Store phone as a string
+        type: String, 
         required: true,
     },
     creditAmount: {
