@@ -6,11 +6,13 @@ const discountAddController = async (req, res) => {
         const { discountName, percentage } = req.body;
 
         if (!discountName || !percentage) {
-            400,
+            return Handler(
+                400,
                 "Provide discountName and Percentage",
                 true,
                 false,
                 res
+            );
         }
 
         const existingDiscount = await discountModel.findOne({ discountName });
@@ -22,33 +24,31 @@ const discountAddController = async (req, res) => {
                 true,
                 false,
                 res
-            )
+            );
         }
 
         const newDiscount = await discountModel.create({
             discountName,
             percentage
-        })
+        });
 
         return Handler(
             200,
-            "New Category Added",
+            "New Discount Added",
             false,
             true,
             res,
-            {
-                newDiscount
-            }
-        )
+            { newDiscount }
+        );
 
     } catch (error) {
         return Handler(
             500,
-            error.message || message,
+            error.message || error,
             true,
             false,
             res
-        )
+        );
     }
 }
 
@@ -71,23 +71,21 @@ const discountUpdateController = async (req, res) => {
         if (!updateDiscount) {
             return Handler(
                 400,
-                "Product Not Found",
+                "Discount Not Found",
                 true,
                 false,
                 res
-            )
+            );
         }
 
         return Handler(
             200,
-            "Updated Successfully",
+            "Discount Updated Successfully",
             false,
             true,
             res,
-            {
-                updateDiscount
-            }
-        )
+            { updateDiscount }
+        );
 
     } catch (error) {
         return Handler(
@@ -96,26 +94,33 @@ const discountUpdateController = async (req, res) => {
             true,
             false,
             res
-        )
+        );
     }
 }
 
-const getAllDiscountController = async(req,res) => {
+const getAllDiscountController = async (req, res) => {
     try {
-    
         const allDiscount = await discountModel.find({});
-    
+
+        if (!allDiscount || allDiscount.length === 0) {
+            return Handler(
+                404,
+                "No Discounts Found",
+                true,
+                false,
+                res
+            );
+        }
+
         return Handler(
             200,
-            "All Discount Fetched : ",
+            "All Discounts Fetched Successfully",
             false,
             true,
             res,
-            {
-                allDiscount
-            }
-        )
-        
+            { allDiscount }
+        );
+
     } catch (error) {
         return Handler(
             500,
@@ -123,9 +128,8 @@ const getAllDiscountController = async(req,res) => {
             true,
             false,
             res
-        )
+        );
     }
-    
-    }
+}
 
 export { discountAddController, discountUpdateController, getAllDiscountController };

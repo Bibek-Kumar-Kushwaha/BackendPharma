@@ -3,47 +3,26 @@ import productModel from "../Models/product.model.js";
 import userModel from "../Models/user.model.js";
 import generateBillNumber from "../Utils/generateBillNumber.js";
 import Handler from "../Utils/handler.js";
+import creditModel from '../Models/credit.model.js'
+import discountModel from '../Models/discount.model.js'
 
 const invoiceCreateController = async (req, res) => {
     try {
-        const { products, phone, name } = req.body;
+        const { products, phone, name, paidAmount, discountName } = req.body;
 
         // Validate input
         if (!products || !Array.isArray(products) || products.length === 0) {
-
-            return Handler(
-                400,
-                "Products must be an array with at least one item",
-                true,
-                false,
-                res
-            )
-
+            return Handler(400, "Products must be an array with at least one item", true, false, res);
         }
 
         if (!phone && !name) {
-            return Handler(
-                400,
-                "Provide either phone or name to identify the user",
-                true,
-                false,
-                res
-            )
+            return Handler(400, "Provide either phone or name to identify the user", true, false, res);
         }
 
         // Fetch user details
-        const userDetails = await userModel.findOne({
-            $or: [{ phone }, { name }]
-        });
-
+        const userDetails = await userModel.findOne({ $or: [{ phone }, { name }] });
         if (!userDetails) {
-            return Handler(
-                400,
-                "User Not Found",
-                true,
-                false,
-                res
-            )
+            return Handler(400, "User Not Found", true, false, res);
         }
 
         const { name: userName, phone: userPhone, address, _id: userId } = userDetails;
@@ -51,36 +30,21 @@ const invoiceCreateController = async (req, res) => {
         // Generate a unique bill number
         const billNumber = await generateBillNumber();
 
-        // Process each product
+        // Process products and calculate grand total
         let grandTotal = 0;
         const productDetailsArray = await Promise.all(
             products.map(async (item, index) => {
                 const product = await productModel.findOne({ productName: item.productName });
+                if (!product) throw new Error(`Product not found: ${item.productName}`);
+                if (product.stockQuantity < item.quantity) throw new Error(`Shortage of ${item.productName}. Only ${product.stockQuantity} items in stock.`);
 
-                if (!product) {
-                    throw new Error(`Product not found for name: ${item.productName}`);
-                }
-
-                if(product.stockQuantity < item.quantity){
-                    return Handler(
-                        400,
-                        `Shortage of ${item.productName}.We have Only ${product.stockQuantity} item in Stock`,
-                        true,
-                        false,
-                        res
-                    )
-                }
-
-                // const newStockQuantity = product.stockQuantity - item.quantity;
-                // const updateStockQuantity = await productModel.findOne({productName: item.productName},
-                //     'product.stockQuantity' : product.newStockQuantity,
-                //     {new: true}
-                // );
-                // console.log(updateStockQuantity)
-
+                // Update product stock
+                await productModel.updateOne(
+                    { productName: item.productName },
+                    { $inc: { stockQuantity: -item.quantity } }
+                );
 
                 const amount = product.sellingPrice * item.quantity;
-
                 grandTotal += amount;
 
                 return {
@@ -89,12 +53,51 @@ const invoiceCreateController = async (req, res) => {
                     productName: product.productName,
                     quantity: item.quantity,
                     sellingPrice: product.sellingPrice,
-                    amount
+                    amount,
                 };
             })
         );
 
-        // Create the invoice
+        // Validate paid amount
+        if (paidAmount == null || typeof paidAmount !== 'number' || paidAmount < 0) {
+            return Handler(400, "Provide a valid Paid Amount", true, false, res);
+        }
+
+        // Apply discount
+        let discountAmount = 0;
+        if (discountName) {
+            const discountDetails = await discountModel.findOne({ discountName });
+            if (!discountDetails) {
+                return Handler(400, "Invalid discount applied", true, false, res);
+            }
+            discountAmount = (discountDetails.percentage / 100) * grandTotal;
+            grandTotal -= discountAmount;
+        }
+
+        // Calculate new credit amount
+        const newCreditAmount = grandTotal - paidAmount;
+        if (newCreditAmount < 0) {
+            return Handler(400, "Paid amount exceeds total amount", true, false, res);
+        }
+
+        // Fetch or create credit record
+        const creditRecord = await creditModel.findOne({ phone: userPhone });
+        if (creditRecord) {
+            creditRecord.creditAmount += newCreditAmount;
+            creditRecord.sellAmount += grandTotal;
+            creditRecord.paidAmount += paidAmount;
+            await creditRecord.save();
+        } else {
+            await creditModel.create({
+                name: userName,
+                phone: userPhone,
+                creditAmount: newCreditAmount,
+                paidAmount,
+                sellAmount: grandTotal,
+            });
+        }
+
+        // Create invoice
         const newInvoice = await invoiceModel.create({
             name: userName,
             phone: userPhone,
@@ -102,27 +105,14 @@ const invoiceCreateController = async (req, res) => {
             userId,
             billNumber,
             products: productDetailsArray,
-            grandTotal
+            grandTotal,
+            paidAmount,
+            creditAmount: newCreditAmount,
         });
 
-        return Handler(
-            200,
-            "Invoice Created Successfully",
-            false,
-            true,
-            res,
-            {
-                newInvoice
-            }
-        )
+        return Handler(200, "Invoice Created Successfully", false, true, res, { newInvoice });
     } catch (error) {
-        return Handler(
-            500,
-            `${error.message || error} server Error`,
-            true,
-            false,
-            res
-        )
+        return Handler(500, `${error.message || "Unexpected Server Error"}`, true, false, res);
     }
 };
 
@@ -152,6 +142,6 @@ const getAllInvoiceController = async (req, res) => {
         )
     }
 
-};   
-                                                                                                                                                           
+};
+
 export { invoiceCreateController, getAllInvoiceController };

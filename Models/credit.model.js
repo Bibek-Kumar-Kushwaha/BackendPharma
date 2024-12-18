@@ -1,18 +1,26 @@
 import mongoose from 'mongoose';
 
 const creditSchema = new mongoose.Schema({
-    userName: {
-        type: String,
-        required: true
+    name: {
+        type: String, // Store name as a string
+        required: true,
     },
     phone: {
-        type: String,
-        required: true
+        type: String, // Store phone as a string
+        required: true,
     },
-    userId: {
-        type: mongoose.Schema.ObjectId,
-        required: true
-    }
+    creditAmount: {
+        type: Number,
+        default: 0,
+    },
+    paidAmount: {
+        type: Number,
+        default: 0,
+    },
+    sellAmount: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const creditModel = mongoose.model("Credit", creditSchema);

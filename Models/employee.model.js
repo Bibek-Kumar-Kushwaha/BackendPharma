@@ -3,10 +3,12 @@ import mongoose from "mongoose";
 const employeeSchema = new mongoose.Schema({
     name: {
         type: mongoose.Schema.ObjectId,
+        ref: 'User',
         required: [true, "Provide Name"]
     },
     role: {
         type: mongoose.Schema.ObjectId,
+        ref: 'User',
         required: [true, "Choose Role"]
     },
     salary: {

@@ -1,20 +1,21 @@
-import counterModel from "../Models/billCounter.model.js"; // Ensure this model is available
+import counterModel from "../Models/billCounter.model.js"; 
 
 const generateBillNumber = async () => {
     try {
-
-        // const date = Date.now().getFullyear().getFullMonth();
-        // console.log(date);
         
-        // Increment the counter for the invoice
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear(); 
+        const currentMonth = String(currentDate.getMonth() + 1).padStart(2, "0"); 
+
         const billCounter = await counterModel.findOneAndUpdate(
-            { name: "Invoice" }, // Counter name
-            { $inc: { seq: 1 } }, // Increment sequence
-            { new: true, upsert: true } // Create if doesn't exist
+            { name: "Customer Invoice" }, 
+            { $inc: { seq: 1 } }, 
+            { new: true, upsert: true } 
         );
 
-        // Generate the bill number in the format C202400001
-        const billNumber = `C2024${String(billCounter.seq).padStart(6, "0")}`;
+        const sequenceNumber = String(billCounter.seq).padStart(4, "0"); 
+        const billNumber = `C${currentYear}${currentMonth}${sequenceNumber}`;
+
         return billNumber;
     } catch (error) {
         throw new Error("Failed to generate bill number");

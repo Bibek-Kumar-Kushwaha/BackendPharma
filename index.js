@@ -8,6 +8,10 @@ import productRouter from './Routes/product.route.js';
 import categoryRouter from './Routes/category.route.js';
 import discountRouter from './Routes/discount.route.js';
 import invoiceRouter from './Routes/invoice.route.js';
+import billCounter from './Routes/billCounter.route.js';
+import creditRouter from './Routes/credit.route.js';
+import supplierRouter from './Routes/supplier.route.js';
+import employeeRouter from './Routes/employee.route.js';
 
 dotenv.config();
 
@@ -29,6 +33,10 @@ app.use('/api/product',productRouter);
 app.use('/api/category',categoryRouter);
 app.use('/api/discount',discountRouter);
 app.use('/api/invoice',invoiceRouter);
+app.use('/api/bill',billCounter);
+app.use('/api/credit',creditRouter);
+app.use('/api/supplier',supplierRouter);
+app.use('/api/employee',employeeRouter);
 
 
 //connect to database
