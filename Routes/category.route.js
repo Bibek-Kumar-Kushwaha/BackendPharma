@@ -7,5 +7,5 @@ const categoryRouter = Router();
 
 categoryRouter.post('/add', auth, categoryAddController);
 categoryRouter.put('/update/:id', auth, categoryUpdateController);
-categoryRouter.get('/get/all',auth,isAdmin,getAllCategoryController);
+categoryRouter.get('/get/all', auth, isAdmin, getAllCategoryController);
 export default categoryRouter;

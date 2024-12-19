@@ -1,34 +1,35 @@
 import Handler from '../Utils/handler.js'
 import supplierModel from "../Models/supplier.model.js";
-import userModel from '../Models/user.model.js';
 
 const supplierAddController = async (req, res) => {
     try {
-        const { name } = req.body;
+        const { supplierName, supplierAddress, supplierPhone, supplierEmail, creditAmount, depositeAmount, purchaseAmount } = req.body;
 
-        const userData = await userModel.findOne({ name });
- 
-        if (!userData ) {
+        if (!supplierName || !supplierPhone || !supplierAddress) {
             return Handler(
                 400,
-                "User not found",
+                "Provide Name, Phone and Address of Supplier",
                 true,
                 false,
                 res
             );
         }
 
-        const supplierData = new supplierModel({
-            supplierName: userData.name,
-            supplierAddress: userData.address,
-            supplierPhone: userData.phone,
+
+        const supplierData = await supplierModel.create({
+            supplierName,
+            supplierPhone,
+            supplierAddress,
+            supplierEmail,
+            creditAmount,
+            depositeAmount,
+            purchaseAmount
         });
 
-        await supplierData.save();
 
         return Handler(
             200,
-            "Supplier data added successfully",
+            "Supplier information added successfully",
             false,
             true,
             res,
@@ -49,33 +50,35 @@ const supplierAddController = async (req, res) => {
 
 const supplierUpdateController = async (req, res) => {
     try {
-        const { name, purchaseAmount,  depositeAmount } = req.body;
+        const { supplierName, supplierAddress, supplierPhone, supplierEmail, purchaseAmount, depositeAmount } = req.body;
 
         // Fetch the supplier by name
-        const supplier = await supplierModel.findOne({ supplierName: name });
+        const supplier = await supplierModel.findOne({ supplierPhone });
 
         if (!supplier) {
             return Handler(
                 400,
-                "Supplier not found",
+                "Supplier not found added first",
                 true,
                 false,
                 res
             );
         }
-        // Update fields if provided
+
+        if (supplierName) supplier.supplierName = supplierName;
+        if (supplierAddress) supplier.supplierAddress = supplierAddress;
+        if (supplierEmail) supplier.supplierEmail = supplierEmail;
+        if (supplierPhone) supplier.supplierPhone = supplierPhone;
+        
+
         const creditAmount = purchaseAmount - (depositeAmount || 0);
 
-        // Update supplier's fields if values are provided
         if (purchaseAmount) supplier.purchaseAmount += purchaseAmount;
         if (depositeAmount) supplier.depositeAmount += depositeAmount;
-        
-        // Recalculate creditAmount based on updated values
-        supplier.creditAmount = supplier.purchaseAmount - supplier.depositeAmount;
-        
-       
 
-        // Save updated supplier
+
+        supplier.creditAmount = supplier.purchaseAmount - supplier.depositeAmount;
+
         await supplier.save();
 
         return Handler(

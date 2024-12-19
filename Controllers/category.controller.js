@@ -103,7 +103,7 @@ const categoryUpdateController = async (req, res) => {
 const getAllCategoryController = async(req,res) => {
     try {
     
-        const allCategory = await productModel.find({});
+        const allCategory = await categoryModel.find({});
     
         return Handler(
             200,

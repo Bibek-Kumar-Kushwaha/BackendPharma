@@ -55,10 +55,7 @@ const discountAddController = async (req, res) => {
 const discountUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`Updating Discount with ID: ${id}`);
-
         const { discountName, percentage } = req.body;
-
         const updateDiscount = await discountModel.findByIdAndUpdate(
             id,
             {

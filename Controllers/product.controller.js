@@ -87,10 +87,22 @@ const productAddController = async (req, res) => {
 const productUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`Updating Product with ID: ${id}`);
 
-        const { productName, costPrice, sellingPrice, MRP, stockQuantity, expiryDate, unit, description, supplierName, categoryName } = req.body;
+        // Destructure fields from request body
+        const { 
+            productName, 
+            costPrice, 
+            sellingPrice, 
+            MRP, 
+            stockQuantity, 
+            expiryDate, 
+            unit, 
+            description, 
+            supplierName, 
+            categoryName 
+        } = req.body;
 
+        // Update the product by ID
         const updateProduct = await productModel.findByIdAndUpdate(
             id,
             {
@@ -103,34 +115,23 @@ const productUpdateController = async (req, res) => {
                 ...(unit && { unit }),
                 ...(description && { description }),
                 ...(supplierName && { supplierName }),
-                ...(categoryName && { categoryName })
+                ...(categoryName && { categoryName }),
             },
-            { new: true }
+            { new: true } // Return the updated document
         );
 
         if (!updateProduct) {
             return Handler(
-                400,
-                "Product Not Found",
-                true,
-                false,
-                res
-            )
-        }
-
-        const supplier = await supplierModel.findOne({ supplierName });
-        const credit = await creditModel.findOne({ name: supplierName });
-
-        if (!supplier) {
-            return Handler(
-                400,
-                "Supplier account are not found",
+                404,
+                "Product not found",
                 true,
                 false,
                 res
             );
         }
 
+        // Handle supplier credit logic
+        let credit = await creditModel.findOne({ name: updateProduct.supplierName });
 
         if (!credit) {
             credit = await creditModel.create({
@@ -140,32 +141,32 @@ const productUpdateController = async (req, res) => {
                 sellAmount: 0,
             });
         } else {
-            credit.creditAmount += costPrice * (stockQuantity || 0); // Increment credit based on the cost price and stock quantity
+            credit.creditAmount += costPrice * (stockQuantity || 0); // Update credit amount
             await credit.save();
         }
 
-
         return Handler(
             200,
-            "Updated Successfully",
+            "Product updated successfully",
             false,
             true,
             res,
             {
-                updateProduct
+                updateProduct,
+                credit,
             }
-        )
-
+        );
     } catch (error) {
         return Handler(
             500,
-            error.message || error,
+            error.message || "An error occurred",
             true,
             false,
             res
-        )
+        );
     }
-}
+};
+
 
 const getAllProductController = async (req, res) => {
     try {

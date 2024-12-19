@@ -7,7 +7,7 @@ const creditSchema = new mongoose.Schema({
     },
     phone: {
         type: String, 
-        required: true,
+        
     },
     creditAmount: {
         type: Number,

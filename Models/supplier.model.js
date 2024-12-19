@@ -9,6 +9,11 @@ const supplierSchema = new mongoose.Schema({
     },
     supplierPhone: {
         type: String, 
+        unique: true
+    },
+    supplierEmail: {
+        type: String,
+        default: ""
     },
     creditAmount: {
         type: Number,

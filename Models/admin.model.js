@@ -21,7 +21,7 @@ const adminSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default: "ADMIN"
+        default: ""
     },
     avatar: {
         public_url: {

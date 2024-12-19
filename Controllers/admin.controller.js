@@ -10,10 +10,10 @@ const adminRegisterController = async (req, res) => {
     try {
         const { name, phone, email, password, role } = req.body;
 
-        if (!name || !phone || !email || !password) {
+        if (!name || !phone || !email || !password || !role) {
             return Handler(
                 400,
-                "Provide name, email, phone, and password",
+                "Provide name, email, phone, role and password",
                 true,
                 false,
                 res
