@@ -62,8 +62,6 @@ const userAddController = async (req, res) => {
 const userUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`Updating user with ID: ${id}`);
-
         const { name, phone, email, address, role } = req.body;
 
         const updateUser = await userModel.findByIdAndUpdate(
@@ -97,7 +95,7 @@ const userUpdateController = async (req, res) => {
             {
                 updateUser
             }
-        )
+        );
 
     } catch (error) {
         return Handler(
@@ -108,7 +106,7 @@ const userUpdateController = async (req, res) => {
             res
         )
     }
-}
+};
 
 const getAllUserController = async(req,res) => {
     try {

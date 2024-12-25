@@ -10,10 +10,10 @@ const adminRegisterController = async (req, res) => {
     try {
         const { name, phone, email, password, role } = req.body;
 
-        if (!name || !phone || !email || !password || !role) {
+        if (!name || !phone || !email || !password) {
             return Handler(
                 400,
-                "Provide name, email, phone, role and password",
+                "Provide Name, Email, Phone and Password",
                 true,
                 false,
                 res
@@ -52,12 +52,13 @@ const adminRegisterController = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            phone
+            phone,
+            role: 'WantToBeAdmin'
         })
 
         return Handler(
             201,
-            "User registered successfully",
+            "Registered! Consult With Super Admin",
             false,
             true,
             res,
@@ -65,7 +66,8 @@ const adminRegisterController = async (req, res) => {
                 id: newAdmin._id,
                 name: newAdmin.name,
                 email: newAdmin.email,
-                phone: newAdmin.phone
+                phone: newAdmin.phone,
+                role: newAdmin.role
             },
         );
     } catch (error) {
@@ -97,7 +99,7 @@ const adminLoginController = async (req, res) => {
         if (!password) {
             return Handler(
                 400,
-                "Provide Phone or Email and Password",
+                "Provide Password",
                 true,
                 false,
                 res
@@ -105,13 +107,13 @@ const adminLoginController = async (req, res) => {
         }
 
         const existingUser = await adminModel.findOne({
-            $or: [{ phone }, { email }]
+            $or: [{ email: req.body.email }, { phone: req.body.email }],
         });
 
         if (!existingUser) {
             return Handler(
                 400,
-                "You Haven't register ",
+                "You Haven't register yet",
                 true,
                 false,
                 res
@@ -119,8 +121,6 @@ const adminLoginController = async (req, res) => {
         }
 
         const isCorrectPassword = await bcrypt.compare(password, existingUser.password);
-
-
         if (!isCorrectPassword) {
             return Handler(
                 400,
@@ -137,8 +137,9 @@ const adminLoginController = async (req, res) => {
         const cookiesOption = {
             httpOnly: true,
             secure: true,
-            sameSite: "None"
-        }
+            sameSite: "None",
+            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
+        };
 
         res.cookie('accessToken', accessToken, cookiesOption);
         res.cookie('refreshToken', refreshToken, cookiesOption);
@@ -164,12 +165,12 @@ const adminLoginController = async (req, res) => {
             res
         )
     }
-}
+};
 
 const adminLogoutController = async (req, res) => {
     try {
 
-        const adminId = req.adminId;
+        const adminId = req.admin;
 
         if (!adminId) {
             return Handler(
@@ -221,61 +222,64 @@ const adminLogoutController = async (req, res) => {
         )
     }
 
-}
+};
 
 const adminUpdateController = async (req, res) => {
     try {
-        const adminId = req.adminId;
-        const { name, phone, email, password } = req.body;
+       
+        const { id } = req.params;
+        const { name, phone, email, password ,role} = req.body;
 
         let hashedPassword = "";
 
         if (password) {
             const saltRound = 10;
-            hashedPassword = await bcrypt.hash(password, saltRound)
+            hashedPassword = await bcrypt.hash(password, saltRound);
         }
 
         const updateAdmin = await adminModel.findByIdAndUpdate(
-            adminId,
+            id,
             {
                 ...(name && { name }),
                 ...(email && { email }),
                 ...(phone && { phone }),
-                ...(password && { password: hashedPassword })
+                ...(password && { password: hashedPassword }),
+                ...(role && { role })
             },
-            { new: true }
-        )
+            { new: true } 
+        );
 
+       
         if (!updateAdmin) {
             return Handler(
                 404,
-                "User Not found",
+                "Admin not found",
                 true,
                 false,
                 res
-            )
+            );
         }
 
         return Handler(
             200,
-            "Updated Successfully",
+            "Admin updated successfully",
             false,
             true,
             res,
-            {
-                updateAdmin
+            { 
+                updateAdmin 
             }
-        )
+        );
     } catch (error) {
         return Handler(
             500,
-            error.message || error,
+            error.message || "Server error",
             true,
             false,
             res
-        )
+        );
     }
-}
+};
 
 const refreshTokenController = async (req, res) => {
     try {
@@ -308,7 +312,8 @@ const refreshTokenController = async (req, res) => {
         const cookiesOption = {
             httpOnly: true,
             secure: true,
-            sameSite: "None"
+            sameSite: "None",
+            maxAge: 7 * 24 * 60 * 60 * 1000  // 7 days
         }
 
         res.cookie('accessToken', newAccessToken, cookiesOption)
@@ -330,11 +335,11 @@ const refreshTokenController = async (req, res) => {
             res
         )
     }
-}
+};
 
 const adminProfileController = async (req, res) => {
     try {
-        const admin = req.adminId;
+        const admin = req.admin;
 
         if (!admin) {
             return Handler(
@@ -374,11 +379,11 @@ const adminProfileController = async (req, res) => {
     }
 };
 
-const getAllAdminController = async(req,res) => {
+const getAllAdminController = async (req, res) => {
     try {
-    
+
         const allAdmin = await adminModel.find({});
-    
+
         return Handler(
             200,
             "All Admin Fetched : ",
@@ -389,7 +394,7 @@ const getAllAdminController = async(req,res) => {
                 allAdmin
             }
         )
-        
+
     } catch (error) {
         return Handler(
             500,
@@ -399,7 +404,7 @@ const getAllAdminController = async(req,res) => {
             res
         )
     }
-    
-    }
+
+};
 
 export { adminRegisterController, adminLoginController, adminLogoutController, adminUpdateController, refreshTokenController, adminProfileController, getAllAdminController };

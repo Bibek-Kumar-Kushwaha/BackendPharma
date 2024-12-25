@@ -1,11 +1,10 @@
 import { Router } from "express";
-import auth from "../Middleware/auth.js";
-import isAdmin from "../Middleware/auth.js";
 import { discountAddController, discountUpdateController, getAllDiscountController } from "../Controllers/discount.controller.js";
+import { isAdmin, isAuthorized } from "../Middleware/auth.middleware.js";
 
 const discountRouter = Router();
 
-discountRouter.post('/add', auth, discountAddController);
-discountRouter.put('/update/:id', auth, discountUpdateController);
-discountRouter.get('/get/all',auth,isAdmin,getAllDiscountController);
+discountRouter.post('/add', isAuthorized, isAdmin, discountAddController);
+discountRouter.put('/update/:id', isAuthorized, isAdmin, discountUpdateController);
+discountRouter.get('/get/all', isAuthorized, isAdmin, getAllDiscountController);
 export default discountRouter;

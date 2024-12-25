@@ -21,7 +21,8 @@ const adminSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default: ""
+        enum: ['ADMIN', 'WantToBeAdmin'],
+        default: 'WantToBeAdmin'
     },
     avatar: {
         public_url: {

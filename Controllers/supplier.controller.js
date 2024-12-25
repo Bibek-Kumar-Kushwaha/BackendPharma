@@ -50,36 +50,46 @@ const supplierAddController = async (req, res) => {
 
 const supplierUpdateController = async (req, res) => {
     try {
-        const { supplierName, supplierAddress, supplierPhone, supplierEmail, purchaseAmount, depositeAmount } = req.body;
+        const { id } = req.params;
+        const {
+            supplierName,
+            supplierAddress,
+            supplierPhone,
+            supplierEmail,
+            purchaseAmount = 0,
+            depositeAmount = 0,
+        } = req.body;
 
-        // Fetch the supplier by name
-        const supplier = await supplierModel.findOne({ supplierPhone });
+        // Find and update supplier
+        const updateSupplier = await supplierModel.findByIdAndUpdate(
+            id,
+            {
+                ...(supplierName && { supplierName }),
+                ...(supplierPhone && { supplierPhone }),
+                ...(supplierEmail && { supplierEmail }),
+                ...(supplierAddress && { supplierAddress }),
+            },
+            { new: true }
+        );
 
-        if (!supplier) {
+        if (!updateSupplier) {
             return Handler(
                 400,
-                "Supplier not found added first",
+                "Supplier not found, please add the supplier first.",
                 true,
                 false,
                 res
             );
         }
 
-        if (supplierName) supplier.supplierName = supplierName;
-        if (supplierAddress) supplier.supplierAddress = supplierAddress;
-        if (supplierEmail) supplier.supplierEmail = supplierEmail;
-        if (supplierPhone) supplier.supplierPhone = supplierPhone;
-        
+        // Update financial fields
+        updateSupplier.purchaseAmount += Number(purchaseAmount);
+        updateSupplier.depositeAmount += Number(depositeAmount);
+        updateSupplier.creditAmount =
+            updateSupplier.purchaseAmount - updateSupplier.depositeAmount;
 
-        const creditAmount = purchaseAmount - (depositeAmount || 0);
-
-        if (purchaseAmount) supplier.purchaseAmount += purchaseAmount;
-        if (depositeAmount) supplier.depositeAmount += depositeAmount;
-
-
-        supplier.creditAmount = supplier.purchaseAmount - supplier.depositeAmount;
-
-        await supplier.save();
+        // Save the updated supplier
+        await updateSupplier.save();
 
         return Handler(
             200,
@@ -88,7 +98,7 @@ const supplierUpdateController = async (req, res) => {
             true,
             res,
             {
-                supplier,
+                supplier: updateSupplier,
             }
         );
     } catch (error) {

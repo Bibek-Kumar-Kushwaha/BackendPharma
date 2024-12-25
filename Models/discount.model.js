@@ -8,6 +8,10 @@ const discountSchema = new mongoose.Schema({
   percentage: {
     type: Number,
     default: 0
+  },
+  description: {
+    type: String,
+    default: ''
   }
 },
   {

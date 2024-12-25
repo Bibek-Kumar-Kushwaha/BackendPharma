@@ -5,7 +5,7 @@ const getCreditDataController = async (req, res) => {
     try {
         const creditDetails = await creditModel.find({})
         return Handler(
-            500,
+            200,
             "Fetched Your Credit Data",
             false,
             true,
