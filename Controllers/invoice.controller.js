@@ -3,8 +3,8 @@ import productModel from "../Models/product.model.js";
 import userModel from "../Models/user.model.js";
 import generateBillNumber from "../Utils/generateBillNumber.js";
 import Handler from "../Utils/handler.js";
-import creditModel from '../Models/credit.model.js'
-import discountModel from '../Models/discount.model.js'
+import creditModel from '../Models/credit.model.js';
+import discountModel from '../Models/discount.model.js';
 
 const invoiceCreateController = async (req, res) => {
     try {
@@ -118,12 +118,10 @@ const invoiceCreateController = async (req, res) => {
 
 const getAllInvoiceController = async (req, res) => {
     try {
-
         const allInvoice = await invoiceModel.find({});
-
         return Handler(
             200,
-            "All Invoice Fetched : ",
+            "All Invoice Fetched: ",
             false,
             true,
             res,
@@ -131,7 +129,6 @@ const getAllInvoiceController = async (req, res) => {
                 allInvoice
             }
         )
-
     } catch (error) {
         return Handler(
             500,
@@ -141,7 +138,33 @@ const getAllInvoiceController = async (req, res) => {
             res
         )
     }
-
 };
 
-export { invoiceCreateController, getAllInvoiceController };
+const invoicePrintController = async (req, res) => {
+    try {
+        const invoice = await invoiceModel.findById(req.params.id); // Fetch by ID
+        if (!invoice) {
+            return Handler(404, "Invoice not found", true, false, res);
+        }
+        return Handler(
+            200,
+            "Invoice Fetched Successfully",
+            false,
+            true,
+            res,
+            {
+                invoice // Return single invoice, not a list
+            }
+        );
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        );
+    }
+};
+
+export { invoiceCreateController, getAllInvoiceController, invoicePrintController };

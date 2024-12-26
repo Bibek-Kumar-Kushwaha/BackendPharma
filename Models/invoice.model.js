@@ -35,7 +35,6 @@ const invoiceSchema = new mongoose.Schema({
             productId: {
                 type: mongoose.Schema.ObjectId,
                 ref: "Product",
-                required: true
             },
             productName: {
                 type: String,
@@ -55,6 +54,10 @@ const invoiceSchema = new mongoose.Schema({
             }
         }
     ],
+    paidAmount: {
+        type: Number,
+        default: 0
+    },
     grandTotal: {
         type: Number,
         default: 0
