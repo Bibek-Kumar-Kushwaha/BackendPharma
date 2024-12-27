@@ -1,6 +1,7 @@
 import discountModel from "../Models/discount.model.js";
 import Handler from "../Utils/handler.js";
 
+// Add Discount Name
 const discountAddController = async (req, res) => {
     try {
         const { discountName, percentage } = req.body;
@@ -52,6 +53,7 @@ const discountAddController = async (req, res) => {
     }
 }
 
+// Update Discount
 const discountUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
@@ -96,6 +98,7 @@ const discountUpdateController = async (req, res) => {
     }
 }
 
+// Get All Discount
 const getAllDiscountController = async (req, res) => {
     try {
         const allDiscount = await discountModel.find({});
@@ -130,4 +133,43 @@ const getAllDiscountController = async (req, res) => {
     }
 }
 
-export { discountAddController, discountUpdateController, getAllDiscountController };
+// Delete Discount
+const deleteDiscountController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteDiscount = await discountModel.findByIdAndDelete(id);
+
+        if (!deleteDiscount) {
+            return Handler(
+                400,
+                'Discount Not Found',
+                true,
+                false,
+                res
+            )
+        }
+
+        return Handler(
+            200,
+            'Discount Found',
+            false,
+            true,
+            res
+        )
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        )
+    }
+};
+
+export { 
+    discountAddController, 
+    discountUpdateController, 
+    getAllDiscountController,
+    deleteDiscountController 
+};

@@ -1,13 +1,17 @@
 import mongoose from 'mongoose';
 
 const creditSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+    },
     name: {
         type: String, 
         required: true,
     },
     phone: {
         type: String, 
-        
+        required: true
     },
     creditAmount: {
         type: Number,

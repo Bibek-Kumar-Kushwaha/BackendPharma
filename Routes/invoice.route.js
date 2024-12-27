@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { getAllInvoiceController, invoiceCreateController, invoicePrintController } from '../Controllers/invoice.controller.js';
+import {
+    getAllInvoiceController,
+    invoiceCreateController,
+    invoicePrintController
+} from '../Controllers/invoice.controller.js';
 import { isAdmin, isAuthorized } from '../Middleware/auth.middleware.js';
 
 const invoiceRouter = Router();

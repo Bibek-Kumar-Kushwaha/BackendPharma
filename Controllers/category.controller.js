@@ -1,6 +1,7 @@
 import categoryModel from "../Models/category.model.js";
 import Handler from "../Utils/handler.js";
 
+// Add Category
 const categoryAddController = async (req, res) => {
     try {
         const { categoryName, description } = req.body;
@@ -52,6 +53,7 @@ const categoryAddController = async (req, res) => {
     }
 }
 
+// Update Category
 const categoryUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
@@ -100,11 +102,12 @@ const categoryUpdateController = async (req, res) => {
     }
 }
 
-const getAllCategoryController = async(req,res) => {
+// Get All Category
+const getAllCategoryController = async (req, res) => {
     try {
-    
+
         const allCategory = await categoryModel.find({});
-    
+
         return Handler(
             200,
             "All Category Fetched : ",
@@ -115,7 +118,7 @@ const getAllCategoryController = async(req,res) => {
                 allCategory
             }
         )
-        
+
     } catch (error) {
         return Handler(
             500,
@@ -125,7 +128,46 @@ const getAllCategoryController = async(req,res) => {
             res
         )
     }
-    
-    }
 
-export { categoryAddController, categoryUpdateController, getAllCategoryController };
+}
+
+// Delete Category
+const deleteCategoryController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteCategory = await categoryModel.findByIdAndDelete(id);
+
+        if (!deleteCategory) {
+            return Handler(
+                400,
+                'Category Not Found',
+                true,
+                false,
+                res
+            )
+        }
+
+        return Handler(
+            200,
+            'Category Found',
+            false,
+            true,
+            res
+        )
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        )
+    }
+};
+
+export {
+    categoryAddController,
+    categoryUpdateController,
+    getAllCategoryController,
+    deleteCategoryController
+};

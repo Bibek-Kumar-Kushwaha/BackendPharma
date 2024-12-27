@@ -1,6 +1,7 @@
 import Handler from '../Utils/handler.js'
 import supplierModel from "../Models/supplier.model.js";
 
+// Add Supplier
 const supplierAddController = async (req, res) => {
     try {
         const { supplierName, supplierAddress, supplierPhone, supplierEmail, creditAmount, depositeAmount, purchaseAmount } = req.body;
@@ -48,6 +49,7 @@ const supplierAddController = async (req, res) => {
     }
 };
 
+// Update Supplier
 const supplierUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
@@ -112,6 +114,7 @@ const supplierUpdateController = async (req, res) => {
     }
 };
 
+// Get All Supplier
 const supplierGetController = async (req, res) => {
     try {
         const supplierDetails = await supplierModel.find({});
@@ -138,5 +141,43 @@ const supplierGetController = async (req, res) => {
     }
 };
 
+// Delete Supplier
+const deleteSupplierController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteSupplier = await supplierModel.findByIdAndDelete(id);
 
-export { supplierGetController, supplierUpdateController, supplierAddController }
+        if (!deleteSupplier) {
+            return Handler(
+                400,
+                'Supplier Not Found',
+                true,
+                false,
+                res
+            )
+        }
+
+        return Handler(
+            200,
+            'Supplier Found',
+            false,
+            true,
+            res
+        )
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        )
+    }
+};
+
+export { 
+    supplierGetController, 
+    supplierUpdateController, 
+    supplierAddController,
+    deleteSupplierController
+}

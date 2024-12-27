@@ -10,6 +10,10 @@ const adminSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    address: {
+        type: String,
+        default: null
+    },
     password: {
         type: String,
         required: [true, "Provide Password"]

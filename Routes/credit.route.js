@@ -1,8 +1,8 @@
 import { Router } from "express";
-import auth from "../Middleware/auth.js";
-import isAdmin from "../Middleware/auth.js";
-import { getCreditDataController } from "../Controllers/credit.controller.js";
-import { isAuthorized } from "../Middleware/auth.middleware.js";
+import {
+    getCreditDataController
+} from "../Controllers/credit.controller.js";
+import { isAdmin, isAuthorized } from "../Middleware/auth.middleware.js";
 
 const creditRouter = Router();
 

@@ -5,6 +5,7 @@ import Handler from "../Utils/handler.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+// Admin Register Controller
 const adminRegisterController = async (req, res) => {
 
     try {
@@ -82,6 +83,7 @@ const adminRegisterController = async (req, res) => {
     }
 };
 
+// Admin Login Controller
 const adminLoginController = async (req, res) => {
     try {
         const { phone, email, password } = req.body;
@@ -167,6 +169,7 @@ const adminLoginController = async (req, res) => {
     }
 };
 
+// Admin Logout Controller
 const adminLogoutController = async (req, res) => {
     try {
 
@@ -224,11 +227,12 @@ const adminLogoutController = async (req, res) => {
 
 };
 
+// Admin Update Controller
 const adminUpdateController = async (req, res) => {
     try {
-       
+
         const { id } = req.params;
-        const { name, phone, email, password ,role} = req.body;
+        const { name, phone, email, password, address, role } = req.body;
 
         let hashedPassword = "";
 
@@ -243,13 +247,14 @@ const adminUpdateController = async (req, res) => {
                 ...(name && { name }),
                 ...(email && { email }),
                 ...(phone && { phone }),
+                ...(address && { address }),
                 ...(password && { password: hashedPassword }),
                 ...(role && { role })
             },
-            { new: true } 
+            { new: true }
         );
 
-       
+
         if (!updateAdmin) {
             return Handler(
                 404,
@@ -266,8 +271,8 @@ const adminUpdateController = async (req, res) => {
             false,
             true,
             res,
-            { 
-                updateAdmin 
+            {
+                updateAdmin
             }
         );
     } catch (error) {
@@ -281,6 +286,7 @@ const adminUpdateController = async (req, res) => {
     }
 };
 
+// Refresh Token Controller
 const refreshTokenController = async (req, res) => {
     try {
         const refreshToken = req.cookies.refreshToken || req?.hearders?.authorization?.split(" ")[1];
@@ -337,6 +343,7 @@ const refreshTokenController = async (req, res) => {
     }
 };
 
+// Get Admin Profile Controller
 const adminProfileController = async (req, res) => {
     try {
         const admin = req.admin;
@@ -379,6 +386,7 @@ const adminProfileController = async (req, res) => {
     }
 };
 
+// Get Own Profile Controller
 const getAllAdminController = async (req, res) => {
     try {
 
@@ -386,7 +394,7 @@ const getAllAdminController = async (req, res) => {
 
         return Handler(
             200,
-            "All Admin Fetched : ",
+            "All Admin Fetched",
             false,
             true,
             res,
@@ -404,7 +412,51 @@ const getAllAdminController = async (req, res) => {
             res
         )
     }
-
 };
 
-export { adminRegisterController, adminLoginController, adminLogoutController, adminUpdateController, refreshTokenController, adminProfileController, getAllAdminController };
+// Delete Admin Profile
+const deleteAdminController = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deleteAdmin = await adminModel.findByIdAndDelete(id);
+
+        if (!deleteAdmin) {
+            return Handler(
+                400,
+                'Admin Id Not Found',
+                true,
+                false,
+                res
+            )
+        }
+
+        return Handler(
+            200,
+            `Admin deleted successfully`,
+            false,
+            true,
+            res
+          );
+          
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        )
+    }
+};
+
+export {
+    adminRegisterController,
+    adminLoginController,
+    adminLogoutController,
+    adminUpdateController,
+    refreshTokenController,
+    adminProfileController,
+    getAllAdminController,
+    deleteAdminController
+};

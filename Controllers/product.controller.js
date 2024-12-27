@@ -4,14 +4,15 @@ import categoryModel from "../Models/category.model.js";
 import creditModel from "../Models/credit.model.js"
 import Handler from "../Utils/handler.js";
 
+// Add New Product
 const productAddController = async (req, res) => {
     try {
-        const { productName, costPrice, sellingPrice, MRP, supplierName, categoryName } = req.body;
+        const { productName, costPrice, sellingPrice, markPrice, supplierName, categoryName } = req.body;
 
         if (!productName || !costPrice || !sellingPrice) {
             return Handler(
                 400,
-                "Provide Product name, costPrice, sellingPrice, MRP, supplierName, and categoryName",
+                "Provide Product name, costPrice, sellingPrice, markPrice, supplierName, and categoryName",
                 true,
                 false,
                 res
@@ -19,7 +20,7 @@ const productAddController = async (req, res) => {
         }
 
         // Check if the product already exists
-        const existingProduct = await productModel.findOne({name: productName });
+        const existingProduct = await productModel.findOne({ name: productName });
         if (existingProduct) {
             return Handler(
                 400,
@@ -32,7 +33,7 @@ const productAddController = async (req, res) => {
 
         // Fetch supplier and category
         const supplier = await supplierModel.findOne({ supplierName });
-    
+
         if (!supplier) {
             return Handler(
                 400,
@@ -59,7 +60,7 @@ const productAddController = async (req, res) => {
             productName,
             costPrice,
             sellingPrice,
-            MRP,
+            markPrice,
             "supplierName": supplier.supplierName,
             "categoryName": category.categoryName,
         });
@@ -83,23 +84,23 @@ const productAddController = async (req, res) => {
     }
 };
 
-
+// Update Product
 const productUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
 
         // Destructure fields from request body
-        const { 
-            productName, 
-            costPrice, 
-            sellingPrice, 
-            MRP, 
-            stockQuantity, 
-            expiryDate, 
-            unit, 
-            description, 
-            supplierName, 
-            categoryName 
+        const {
+            productName,
+            costPrice,
+            sellingPrice,
+            markPrice,
+            stockQuantity,
+            expiryDate,
+            unit,
+            description,
+            supplierName,
+            categoryName
         } = req.body;
 
         // Update the product by ID
@@ -109,7 +110,7 @@ const productUpdateController = async (req, res) => {
                 ...(productName && { productName }),
                 ...(costPrice && { costPrice }),
                 ...(sellingPrice && { sellingPrice }),
-                ...(MRP && { MRP }),
+                ...(markPrice && { markPrice }),
                 ...(stockQuantity && { stockQuantity }),
                 ...(expiryDate && { expiryDate }),
                 ...(unit && { unit }),
@@ -167,7 +168,7 @@ const productUpdateController = async (req, res) => {
     }
 };
 
-
+// Get All Product
 const getAllProductController = async (req, res) => {
     try {
 
@@ -196,4 +197,76 @@ const getAllProductController = async (req, res) => {
 
 }
 
-export { productAddController, productUpdateController, getAllProductController };
+// View All Deatils of Single Product\
+const viewProductController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await productModel.findById(id);
+
+        if (!product) {
+            return Handler(
+                200,
+                'Product Not Found',
+                false,
+                true,
+                res
+            )
+        }
+
+        return Handler(
+            200,
+            'You got Your Product',
+            false,
+            true,
+            res,
+            {
+                product
+            }
+        )
+    } catch (error) {
+
+    }
+}
+
+// delete Product
+const deleteProductController = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteProduct = await productModel.findByIdAndDelete(id);
+
+        if (!deleteProduct) {
+            return Handler(
+                400,
+                'Product Not Found',
+                true,
+                false,
+                res
+            )
+        }
+
+        return Handler(
+            200,
+            `Product deleted successfully`,
+            false,
+            true,
+            res
+        );
+
+    } catch (error) {
+        return Handler(
+            500,
+            error.message || error,
+            true,
+            false,
+            res
+        )
+    }
+};
+
+export {
+    productAddController,
+    productUpdateController,
+    getAllProductController,
+    deleteProductController,
+    viewProductController
+};
