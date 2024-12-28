@@ -6,12 +6,15 @@ const creditSchema = new mongoose.Schema({
         ref: 'User'
     },
     name: {
-        type: String, 
+        type: String,
         required: true,
     },
     phone: {
-        type: String, 
-        required: true
+        type: String
+
+    },
+    address: {
+        type: String
     },
     creditAmount: {
         type: Number,
@@ -20,11 +23,11 @@ const creditSchema = new mongoose.Schema({
     paidAmount: {
         type: Number,
         default: 0,
-    },
+    }, 
     sellAmount: {
         type: Number,
         default: 0,
-    },
+    }
 });
 
 const creditModel = mongoose.model("Credit", creditSchema);

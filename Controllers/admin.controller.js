@@ -369,6 +369,7 @@ const adminProfileController = async (req, res) => {
                 name: admin.name,
                 email: admin.email,
                 role: admin.role,
+                address: admin.address,
                 phone: admin.phone,
                 avatar: admin.avatar,
                 createdAt: admin.createdAt,

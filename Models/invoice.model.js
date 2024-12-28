@@ -7,7 +7,7 @@ const invoiceSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        required: true
+        // required: true
     },
     address: {
         type: String,
@@ -59,6 +59,18 @@ const invoiceSchema = new mongoose.Schema({
         default: 0
     },
     grandTotal: {
+        type: Number,
+        default: 0
+    },
+    discountAmount: {
+        type: Number,
+        default: 0
+    },
+    creditAmount: {
+        type: Number,
+        default: 0
+    },
+    oldCreditAmount: {
         type: Number,
         default: 0
     }

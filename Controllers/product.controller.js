@@ -103,6 +103,21 @@ const productUpdateController = async (req, res) => {
             categoryName
         } = req.body;
 
+
+        // Addition of Stock Quantity
+        const currentProduct = await productModel.findById(id);
+        if (!currentProduct) {
+            return Handler(
+                404, 
+                "Product not found", 
+                true, 
+                false, 
+                res
+            );
+        }
+        
+        const updatedStockQuantity = currentProduct.stockQuantity + parseInt(stockQuantity || 0);
+
         // Update the product by ID
         const updateProduct = await productModel.findByIdAndUpdate(
             id,
@@ -111,7 +126,7 @@ const productUpdateController = async (req, res) => {
                 ...(costPrice && { costPrice }),
                 ...(sellingPrice && { sellingPrice }),
                 ...(markPrice && { markPrice }),
-                ...(stockQuantity && { stockQuantity }),
+                    stockQuantity: updatedStockQuantity,
                 ...(expiryDate && { expiryDate }),
                 ...(unit && { unit }),
                 ...(description && { description }),
@@ -131,20 +146,26 @@ const productUpdateController = async (req, res) => {
             );
         }
 
-        // Handle supplier credit logic
-        let credit = await creditModel.findOne({ name: updateProduct.supplierName });
+        // Handle Credit for Supplier
+        let supplier = await supplierModel.findOne({ supplierName });
 
-        if (!credit) {
-            credit = await creditModel.create({
-                name: supplierName,
-                creditAmount: costPrice * (stockQuantity || 0),
-                paidAmount: 0,
-                sellAmount: 0,
-            });
-        } else {
-            credit.creditAmount += costPrice * (stockQuantity || 0); // Update credit amount
-            await credit.save();
+        if (!supplier) {
+            return Handler(
+                404, 
+                "Supplier not found", 
+                true, 
+                false, 
+                res
+            );
         }
+
+        const purchaseAmount = costPrice * parseInt(stockQuantity || 0);
+
+        // Update supplier's credit amount
+        supplier.creditAmount += parseInt(purchaseAmount);
+        supplier.purchaseAmount += parseInt(purchaseAmount);
+
+        await supplier.save();
 
         return Handler(
             200,
@@ -154,7 +175,7 @@ const productUpdateController = async (req, res) => {
             res,
             {
                 updateProduct,
-                credit,
+                // credit,
             }
         );
     } catch (error) {

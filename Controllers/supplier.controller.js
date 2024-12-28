@@ -1,5 +1,6 @@
 import Handler from '../Utils/handler.js'
 import supplierModel from "../Models/supplier.model.js";
+import creditModel from '../Models/credit.model.js';
 
 // Add Supplier
 const supplierAddController = async (req, res) => {
@@ -62,19 +63,10 @@ const supplierUpdateController = async (req, res) => {
             depositeAmount = 0,
         } = req.body;
 
-        // Find and update supplier
-        const updateSupplier = await supplierModel.findByIdAndUpdate(
-            id,
-            {
-                ...(supplierName && { supplierName }),
-                ...(supplierPhone && { supplierPhone }),
-                ...(supplierEmail && { supplierEmail }),
-                ...(supplierAddress && { supplierAddress }),
-            },
-            { new: true }
-        );
+        // Find the supplier by ID
+        const currentSupplier = await supplierModel.findById(id);
 
-        if (!updateSupplier) {
+        if (!currentSupplier) {
             return Handler(
                 400,
                 "Supplier not found, please add the supplier first.",
@@ -84,14 +76,29 @@ const supplierUpdateController = async (req, res) => {
             );
         }
 
-        // Update financial fields
-        updateSupplier.purchaseAmount += Number(purchaseAmount);
-        updateSupplier.depositeAmount += Number(depositeAmount);
-        updateSupplier.creditAmount =
-            updateSupplier.purchaseAmount - updateSupplier.depositeAmount;
+        // Add new amounts to the previous ones
+        const updatedPurchaseAmount =
+            currentSupplier.purchaseAmount + parseInt(purchaseAmount || 0);
+        const updatedDepositeAmount =
+            currentSupplier.depositeAmount + parseInt(depositeAmount || 0);
 
-        // Save the updated supplier
-        await updateSupplier.save();
+        // Calculate the new credit amount
+        const updatedCreditAmount = parseInt(updatedPurchaseAmount) - parseInt(updatedDepositeAmount);
+
+        // Update supplier
+        const updatedSupplier = await supplierModel.findByIdAndUpdate(
+            id,
+            {
+                ...(supplierName && { supplierName }),
+                ...(supplierPhone && { supplierPhone }),
+                ...(supplierEmail && { supplierEmail }),
+                ...(supplierAddress && { supplierAddress }),
+                purchaseAmount: updatedPurchaseAmount,
+                depositeAmount: updatedDepositeAmount,
+                creditAmount: updatedCreditAmount,
+            },
+            { new: true } // Return the updated document
+        );
 
         return Handler(
             200,
@@ -100,7 +107,7 @@ const supplierUpdateController = async (req, res) => {
             true,
             res,
             {
-                supplier: updateSupplier,
+                supplier: updatedSupplier,
             }
         );
     } catch (error) {
@@ -118,7 +125,6 @@ const supplierUpdateController = async (req, res) => {
 const supplierGetController = async (req, res) => {
     try {
         const supplierDetails = await supplierModel.find({});
-        console.log(supplierDetails);
 
         return Handler(
             200,

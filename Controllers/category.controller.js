@@ -57,7 +57,6 @@ const categoryAddController = async (req, res) => {
 const categoryUpdateController = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`Updating Category with ID: ${id}`);
 
         const { categoryName, description } = req.body;
 

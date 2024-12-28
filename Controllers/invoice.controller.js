@@ -71,19 +71,18 @@ const invoiceCreateController = async (req, res) => {
                 return Handler(400, "Invalid discount applied", true, false, res);
             }
             discountAmount = (discountDetails.percentage / 100) * grandTotal;
-            grandTotal -= discountAmount;
         }
+
+        // Fetch old credit amount
+        const creditRecord = await creditModel.findOne({ phone: userPhone });
+        const oldCreditAmount = creditRecord ? creditRecord.creditAmount : 0;
 
         // Calculate new credit amount
-        const newCreditAmount = grandTotal - paidAmount;
-        if (newCreditAmount < 0) {
-            return Handler(400, "Paid amount exceeds total amount", true, false, res);
-        }
+        const newCreditAmount = grandTotal - discountAmount - paidAmount + oldCreditAmount;
 
-        // Fetch or create credit record
-        const creditRecord = await creditModel.findOne({ phone: userPhone });
+        // Update or create credit record
         if (creditRecord) {
-            creditRecord.creditAmount += newCreditAmount;
+            creditRecord.creditAmount = newCreditAmount;
             creditRecord.sellAmount += grandTotal;
             creditRecord.paidAmount += paidAmount;
             await creditRecord.save();
@@ -106,7 +105,9 @@ const invoiceCreateController = async (req, res) => {
             billNumber,
             products: productDetailsArray,
             grandTotal,
+            discountAmount,
             paidAmount,
+            oldCreditAmount,
             creditAmount: newCreditAmount,
         });
 
@@ -116,6 +117,7 @@ const invoiceCreateController = async (req, res) => {
     }
 };
 
+// Get All Invoice
 const getAllInvoiceController = async (req, res) => {
     try {
         const allInvoice = await invoiceModel.find({});
@@ -140,6 +142,7 @@ const getAllInvoiceController = async (req, res) => {
     }
 };
 
+// get Invoice by ID
 const invoicePrintController = async (req, res) => {
     try {
         const invoice = await invoiceModel.findById(req.params.id); // Fetch by ID
@@ -153,7 +156,7 @@ const invoicePrintController = async (req, res) => {
             true,
             res,
             {
-                invoice // Return single invoice, not a list
+                invoice 
             }
         );
     } catch (error) {
@@ -167,4 +170,8 @@ const invoicePrintController = async (req, res) => {
     }
 };
 
-export { invoiceCreateController, getAllInvoiceController, invoicePrintController };
+export { 
+    invoiceCreateController, 
+    getAllInvoiceController, 
+    invoicePrintController 
+};
