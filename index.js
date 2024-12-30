@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
     cors({
-      origin: ['http://localhost:5173', 'http://192.168.1.4:5173'],
+      origin: ['http://localhost:5173', 'https://kushwahavethub.vercel.app'],
       credentials: true,
     })
   );
