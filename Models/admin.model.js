@@ -26,7 +26,7 @@ const adminSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: ['ADMIN','WantToBeAdmin'],
-        default: "ADMIN"
+        default: "WantToBeAdmin"
     },
     avatar: {
         public_url: {
@@ -41,13 +41,7 @@ const adminSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
         default: null
-    },
-    dbName: {
-        type: String,
-        unique: true,
-        
     }
-
 },
     {
         timestamps: true
