@@ -13,7 +13,7 @@ import { isAdmin, isAuthorized } from "../Middleware/auth.middleware.js";
 
 const adminRouter = Router();
 
-adminRouter.post('/register', isAuthorized, isAdmin, adminRegisterController);
+adminRouter.post('/register', adminRegisterController);
 adminRouter.post('/login', adminLoginController);
 adminRouter.post('/logout', isAuthorized, isAdmin, adminLogoutController);
 adminRouter.put('/update/:id', isAuthorized, isAdmin, adminUpdateController);

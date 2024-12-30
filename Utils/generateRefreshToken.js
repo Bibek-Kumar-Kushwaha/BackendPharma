@@ -3,7 +3,7 @@ import adminModel from '../Models/admin.model.js';
 
 const generateRefreshToken = async (adminId) => {
     try {
-        const token = await jwt.sign(
+        const token = jwt.sign(
             { id: adminId },
             process.env.SECRET_KEY_REFRESH_TOKEN,
             { expiresIn: "7d" }

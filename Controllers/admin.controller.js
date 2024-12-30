@@ -108,11 +108,11 @@ const adminLoginController = async (req, res) => {
             )
         }
 
-        const existingUser = await adminModel.findOne({
+        const existingAdmin = await adminModel.findOne({
             $or: [{ email: req.body.email }, { phone: req.body.email }],
         });
 
-        if (!existingUser) {
+        if (!existingAdmin) {
             return Handler(
                 400,
                 "You Haven't register yet",
@@ -122,7 +122,7 @@ const adminLoginController = async (req, res) => {
             )
         }
 
-        const isCorrectPassword = await bcrypt.compare(password, existingUser.password);
+        const isCorrectPassword = await bcrypt.compare(password, existingAdmin.password);
         if (!isCorrectPassword) {
             return Handler(
                 400,
@@ -133,8 +133,8 @@ const adminLoginController = async (req, res) => {
             )
         }
 
-        const accessToken = await generateAccessToken(existingUser._id);
-        const refreshToken = await generateRefreshToken(existingUser._id);
+        const accessToken = await generateAccessToken(existingAdmin._id);
+        const refreshToken = await generateRefreshToken(existingAdmin._id);
 
         const cookiesOption = {
             httpOnly: true,
@@ -438,8 +438,8 @@ const deleteAdminController = async (req, res) => {
             false,
             true,
             res
-          );
-          
+        );
+
     } catch (error) {
         return Handler(
             500,

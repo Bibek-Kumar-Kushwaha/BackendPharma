@@ -6,7 +6,7 @@ dotenv.config();
 const DBNAME = process.env.DBNAME;
 const URI = process.env.URI;
 
-const connectDb = async (req, res) => {
+const connectDb = async () => {
     try {
         if (!URI || !DBNAME) {
             throw new Error('Database URI or DBNAME is missing in the environment variables')

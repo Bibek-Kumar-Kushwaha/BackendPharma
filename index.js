@@ -45,8 +45,6 @@ app.use('/api/credit',creditRouter);
 app.use('/api/supplier',supplierRouter);
 app.use('/api/employee',employeeRouter);
 
-
-//connect to database
 connectDb();
 
 app.listen(PORT, ()=> {
