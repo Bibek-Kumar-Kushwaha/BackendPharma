@@ -15,7 +15,7 @@ const adminRouter = Router();
 
 adminRouter.post('/register', adminRegisterController);
 adminRouter.post('/login', adminLoginController);
-adminRouter.post('/logout', isAuthorized, isAdmin, adminLogoutController);
+adminRouter.post('/logout', adminLogoutController);
 adminRouter.put('/update/:id', isAuthorized, isAdmin, adminUpdateController);
 adminRouter.post('/refresh-token', isAuthorized, refreshTokenController);
 adminRouter.get('/profile', isAuthorized, isAdmin, adminProfileController);
