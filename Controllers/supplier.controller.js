@@ -77,13 +77,13 @@ const supplierUpdateController = async (req, res) => {
         }
 
         // Add new amounts to the previous ones
-        const updatedPurchaseAmount =
-            currentSupplier.purchaseAmount + parseInt(purchaseAmount || 0);
+        // const updatedPurchaseAmount =
+            // currentSupplier.purchaseAmount + parseInt(purchaseAmount || 0);
         const updatedDepositeAmount =
             currentSupplier.depositeAmount + parseInt(depositeAmount || 0);
 
         // Calculate the new credit amount
-        const updatedCreditAmount = parseInt(updatedPurchaseAmount) - parseInt(updatedDepositeAmount);
+        const updatedCreditAmount = parseInt(purchaseAmount) - parseInt(updatedDepositeAmount);
 
         // Update supplier
         const updatedSupplier = await supplierModel.findByIdAndUpdate(
@@ -93,7 +93,7 @@ const supplierUpdateController = async (req, res) => {
                 ...(supplierPhone && { supplierPhone }),
                 ...(supplierEmail && { supplierEmail }),
                 ...(supplierAddress && { supplierAddress }),
-                purchaseAmount: updatedPurchaseAmount,
+                // purchaseAmount: updatedPurchaseAmount,
                 depositeAmount: updatedDepositeAmount,
                 creditAmount: updatedCreditAmount,
             },
